@@ -3,14 +3,11 @@ import config from "config";
 
 const DB = config.get("db.uri");
 
-const connectDb = async () => {
+const connectDb = () => {
   try {
-    await mongoose.connect(DB, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-  } catch (error) {
-    console.log("connection failed", error.message);
+    mongoose.connect(DB);
+  } catch (err) {
+    console.log("connection failed", err.message);
   }
 };
 
