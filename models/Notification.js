@@ -3,12 +3,11 @@ const { Schema, model } = mongoose;
 
 const notificationSchema = new Schema(
   {
-    bubbleId: String,
-    id: String,
-    invitedBy: String,
-    invitedByUser: String,
+    bubbleId: { type: String, ref: "Bubble", default: null },
+    invitedBy: { type: String, ref: "User" },
     type: String,
-    user: [String],
+    userIds: { type: [String], ref: "User", default: null },
+    recoId: { type: String, ref: "Reco", default: null },
   },
   { timestamps: true }
 );
