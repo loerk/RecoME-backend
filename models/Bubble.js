@@ -1,26 +1,25 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
-
+const required = true;
 const bubbleSchema = new Schema(
   {
     categories: {
       type: [String],
-      required: true,
+      required,
     },
     name: {
       type: String,
-      required: true,
+      required,
     },
     description: {
       type: String,
-      required: true,
+      required,
     },
     createdBy: String,
-    id: String,
     imageUrl: String,
-    members: [String],
+    members: [{ type: String, ref: "User" }],
   },
   { timestamps: true }
 );
 
-export default mongoose.model("User", bubbleSchema);
+export default mongoose.model("Bubble", bubbleSchema);
