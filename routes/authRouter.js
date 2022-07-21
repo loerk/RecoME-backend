@@ -1,12 +1,18 @@
 import { Router } from "express";
-const router = Router();
+
 import {
   signup,
   signin,
   verifyEmailToken,
 } from "../controllers/authController.js";
 
+const router = Router();
+
 router.post("/signup", signup);
 router.post("/signin", signin);
-router.get("/verify/:token", verifyEmailToken);
+//router.post("/refreshToken", refreshAuth, tokenController);
+// middleware checks the refresh token and read the data of the body maybe id
+// provide an code to the email address and the body needs to
+// controller
+router.get("/verifyEmail/:token", verifyEmailToken);
 export default router;
