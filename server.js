@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import config from "config";
 import mongoose from "mongoose";
+import cookieParser from "cookie-parser";
 
 import connectDb from "./helpers/dbConnect.js";
 import authRouter from "./routes/authRouter.js";
@@ -10,19 +11,23 @@ import bubblesRouter from "./routes/bubblesRouter.js";
 import friendsRouter from "./routes/friendsRouter.js";
 import recosRouter from "./routes/recosRouter.js";
 import settingsRouter from "./routes/settingsRouter.js";
+import { globalErrorHandler } from "./middlewares/globalErrorHandler.js";
+
 const server = express();
 
 // middlewares
 server.use(express.json());
-server.use(cors());
+server.use(cors({ origin: true, credentials: true }));
+server.use(cookieParser());
 
 // Routes
-server.use("/", authRouter);
-server.use("/user", userRouter);
+server.use("/auth", authRouter);
+server.use("/users", userRouter);
 server.use("/bubbles", bubblesRouter);
 server.use("/friends", friendsRouter);
 server.use("/recos", recosRouter);
 server.use("/settings", settingsRouter);
+server.use(globalErrorHandler);
 
 // dbConnection
 connectDb();
