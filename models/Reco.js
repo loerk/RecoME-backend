@@ -1,26 +1,27 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
-
+const required = true;
 const recoSchema = new Schema(
   {
     categories: {
       type: [String],
-      required: true,
+      required,
     },
     name: {
       type: String,
-      required: true,
+      required,
     },
     description: {
       type: String,
-      required: true,
+      required,
     },
     createdBy: String,
-    id: String,
+    url: String,
     imageUrl: String,
-    members: [String],
+    memberIds: { type: [String], ref: "User" },
+    bubbleId: { type: String, ref: "Bubble" },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("User", recoSchema);
+export default mongoose.model("Reco", recoSchema);
