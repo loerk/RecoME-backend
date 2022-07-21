@@ -1,10 +1,18 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { getUserById } from "../controllers/userControllers.js";
-import { verifyToken } from "../middlewares/verifyToken.js";
-import User from "../models/User.js";
+import {
+  findUserByEmail,
+  findUserById,
+  updateUser,
+  deleteUser,
+} from "../controllers/userControllers.js";
+import { verifyAccessToken } from "../middlewares/verifyAccessToken.js";
+
 const userRouter = Router();
 
-userRouter.post("/findUser", verifyToken, getUserById);
+userRouter.get("/:id", verifyAccessToken, findUserById);
+userRouter.get("/:email", verifyAccessToken, findUserByEmail);
+userRouter.put("/:id", verifyAccessToken, updateUser);
+userRouter.delete("/:id", verifyAccessToken, deleteUser);
 
 export default userRouter;

@@ -1,20 +1,20 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
-
+const required = true;
 const userSchema = new Schema(
   {
     username: {
       type: String,
-      required: true,
+      required,
     },
     password: {
       type: String,
       minLength: 4,
-      required: true,
+      required,
     },
     email: {
       type: String,
-      required: true,
+      required,
       lowerCase: true,
       validate(value) {
         if (!value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/))
@@ -23,7 +23,6 @@ const userSchema = new Schema(
     },
     verified: { type: Boolean, default: false },
     emailToken: { type: String, required: true },
-    id: String,
     lastLogin: {
       type: Date,
       default: new Date(),
