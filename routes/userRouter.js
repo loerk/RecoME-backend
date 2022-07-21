@@ -5,7 +5,7 @@ import {
   findUserById,
   updateUser,
   deleteUser,
-} from "../controllers/userControllers.js";
+} from "../controllers/userController.js";
 import { verifyAccessToken } from "../middlewares/verifyAccessToken.js";
 
 const userRouter = Router();

@@ -7,10 +7,10 @@ import cookieParser from "cookie-parser";
 import connectDb from "./helpers/dbConnect.js";
 import authRouter from "./routes/authRouter.js";
 import userRouter from "./routes/userRouter.js";
-import bubblesRouter from "./routes/bubblesRouter.js";
-import friendsRouter from "./routes/friendsRouter.js";
-import recosRouter from "./routes/recosRouter.js";
-import settingsRouter from "./routes/settingsRouter.js";
+import bubbleRouter from "./routes/bubbleRouter.js";
+import recoRouter from "./routes/recoRouter.js";
+import notificationRouter from "./routes/notificationRouter.js";
+
 import { globalErrorHandler } from "./middlewares/globalErrorHandler.js";
 
 const server = express();
@@ -23,10 +23,10 @@ server.use(cookieParser());
 // Routes
 server.use("/auth", authRouter);
 server.use("/users", userRouter);
-server.use("/bubbles", bubblesRouter);
-server.use("/friends", friendsRouter);
-server.use("/recos", recosRouter);
-server.use("/settings", settingsRouter);
+server.use("/bubbles", bubbleRouter);
+server.use("/recos", recoRouter);
+server.use("/notifications", notificationRouter);
+
 server.use(globalErrorHandler);
 
 // dbConnection

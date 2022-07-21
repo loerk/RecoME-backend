@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import Bubble from "../models/Bubble.js";
 import Reco from "../models/Reco.js";
-import { findBubbleById } from "./bubbleControllers.js";
+import { findBubbleById } from "./bubbleController.js";
 
 export const listRecos = async (req, res) => {
   try {

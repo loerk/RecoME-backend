@@ -8,7 +8,7 @@ import {
   listBubbles,
   leaveBubble,
   updateBubble,
-} from "../controllers/bubbleControllers.js";
+} from "../controllers/bubbleController.js";
 import { verifyAccessToken } from "../middlewares/verifyAccessToken.js";
 
 const bubbleRouter = Router();
