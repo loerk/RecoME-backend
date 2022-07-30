@@ -20,28 +20,8 @@ export const listNotifications = async (req, res) => {
   }
 };
 
-export const addNotification = async (req, res) => {
-  const { id } = req.user;
-  const { bubbleId, type, userIds, recoId } = req.body;
-  console.log(userIds);
-
-  try {
-    const notification = await Notification.create({
-      bubbleId,
-      invitedBy: id,
-      type,
-      userIds,
-      recoId,
-    });
-
-    res.status(201).json(notification);
-  } catch (error) {
-    res.status(409).json({ message: error.message });
-  }
-};
-
 export const deleteNotification = async (req, res) => {
-  const { notificationId } = req.params;
+  const notificationId = req.params.id;
   if (!mongoose.Types.ObjectId.isValid(notificationId))
     return res.status(404).json({ message: "invalid id" });
   try {
@@ -86,11 +66,15 @@ export const acceptNotification = async (req, res) => {
     if (notification.type === "INVITATION_TO_RECO") {
       const reco = await Reco.findByIdAndUpdate(
         notification.recoId,
-        { $addToSet: { memberIds: id } },
+        { $addToSet: { userIds: id } },
         { new: true }
       );
       await Notification.findByIdAndDelete(notificationId);
-      res.status(205).json(reco);
+      return res.status(200).json({ reco, message: "deleted notification" });
+    }
+    if (notification.type === "NOTIFICATION_ABOUT_RECO_IN_BUBBLE") {
+      await Notification.findByIdAndDelete(notificationId);
+      return res.status(205).json({ message: "deleted notification" });
     }
   } catch (error) {
     console.log(error);

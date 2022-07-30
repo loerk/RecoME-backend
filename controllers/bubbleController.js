@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
+import { addNotification } from "../helpers/addNotification.js";
 
 import Bubble from "../models/Bubble.js";
 
 export const addBubble = async (req, res) => {
+  const { id } = req.user;
   const { categories, name, description, createdBy, imageUrl, members } =
     req.body;
 
@@ -13,7 +15,7 @@ export const addBubble = async (req, res) => {
       description,
       createdBy,
       imageUrl,
-      members,
+      members: [id],
     });
 
     res.status(201).json(bubble);
@@ -74,18 +76,28 @@ export const findBubbleById = async (req, res) => {
     console.log(error);
   }
 };
-export const inviteMember = async (req, res) => {
+export const inviteUser = async (req, res) => {
   const { id } = req.user;
   const bubbleId = req.params.bubbleId;
+  const { userId } = req.body;
+
   try {
     const currentBubble = await Bubble.findById(bubbleId);
-    if (currentBubble.members.includes(id))
+    if (currentBubble.members.includes(userId))
       return res.status(409).json({ message: "user is already member" });
-    // TODO: send notification
-    // currentBubble.members.push(_id);
-    // await currentBubble.save();
+    const notification = await addNotification({
+      id,
+      bubbleId,
+      type: "INVITATION_TO_BUBBLE",
+      userIds: [userId],
+    });
+    if (!notification)
+      return res
+        .status(400)
+        .json({ message: "could not create invitation notification" });
     res.status(200).json({ currentBubble });
   } catch (error) {
+    console.log(error);
     res.status(400).json({ message: "something went wrong" });
   }
 };
@@ -94,7 +106,6 @@ export const leaveBubble = async (req, res) => {
   const bubbleId = req.params.bubbleId;
   try {
     const currentBubble = await Bubble.findById(bubbleId);
-    console.log(currentBubble);
     if (currentBubble.members.length === 1) {
       await deleteBubble(bubbleId);
     } else {

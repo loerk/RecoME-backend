@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { addNotification } from "../helpers/addNotification.js";
 import Bubble from "../models/Bubble.js";
 import Reco from "../models/Reco.js";
 import { findBubbleById } from "./bubbleController.js";
@@ -24,12 +25,11 @@ export const listRecos = async (req, res) => {
 
 export const addReco = async (req, res) => {
   const { id } = req.user;
-  const { categories, name, description, imageUrl, memberIds, bubbleId } =
+  const { categories, name, description, imageUrl, userIds, bubbleId } =
     req.body;
-
   try {
     const reco = await Reco.create({
-      memberIds,
+      userIds,
       bubbleId: bubbleId,
       createdBy: id,
       categories,
@@ -37,6 +37,29 @@ export const addReco = async (req, res) => {
       description,
       imageUrl,
     });
+    if (!bubbleId) {
+      const notification = await addNotification({
+        id,
+        recoId: reco._id,
+        type: "INVITATION_TO_RECO",
+        userIds,
+      });
+      if (!notification)
+        return res
+          .status(400)
+          .json({ message: "could not create notification" });
+    } else {
+      const notification = await addNotification({
+        id,
+        bubbleId,
+        type: "NOTIFICATION_ABOUT_RECO_IN_BUBBLE",
+        userIds,
+      });
+      if (!notification)
+        return res
+          .status(400)
+          .json({ message: "could not create notification" });
+    }
 
     res.status(201).json(reco);
   } catch (error) {
