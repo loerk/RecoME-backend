@@ -49,12 +49,14 @@ export const addReco = async (req, res) => {
           .status(400)
           .json({ message: "could not create notification" });
     } else {
+      const bubble = await Bubble.findById(bubbleId);
       const notification = await addNotification({
         id,
         bubbleId,
         type: "NOTIFICATION_ABOUT_RECO_IN_BUBBLE",
-        userIds,
+        userIds: bubble.members,
       });
+      console.log(notification);
       if (!notification)
         return res
           .status(400)
@@ -63,6 +65,7 @@ export const addReco = async (req, res) => {
 
     res.status(201).json(reco);
   } catch (error) {
+    console.log(error);
     res.status(409).json({ message: error.message });
   }
 };
