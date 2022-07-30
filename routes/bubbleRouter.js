@@ -2,7 +2,7 @@ import { Router } from "express";
 import { check } from "express-validator";
 import {
   addBubble,
-  inviteMember,
+  inviteUser,
   deleteBubble,
   findBubbleById,
   listBubbles,
@@ -17,6 +17,6 @@ bubbleRouter.put("/:id", verifyAccessToken, updateBubble);
 bubbleRouter.delete("/:id", verifyAccessToken, deleteBubble);
 bubbleRouter.get("/", verifyAccessToken, listBubbles);
 bubbleRouter.get("/:id", verifyAccessToken, findBubbleById);
-bubbleRouter.put("/:bubbleId/invite", verifyAccessToken, inviteMember);
+bubbleRouter.put("/:bubbleId/invite", verifyAccessToken, inviteUser);
 bubbleRouter.put("/:bubbleId/leave", verifyAccessToken, leaveBubble);
 export default bubbleRouter;

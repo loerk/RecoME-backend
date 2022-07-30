@@ -18,7 +18,7 @@ const recoSchema = new Schema(
     createdBy: String,
     url: String,
     imageUrl: String,
-    memberIds: { type: [String], ref: "User" },
+    userIds: { type: [String], ref: "User" },
     bubbleId: { type: String, ref: "Bubble" },
   },
   { timestamps: true }
