@@ -13,7 +13,7 @@ export const addBubble = async (req, res) => {
       categories: categories.split(" "),
       name,
       description,
-      createdBy,
+      createdBy: id,
       imageUrl,
       members: [id],
     });
