@@ -24,7 +24,7 @@ export const addBubble = async (req, res) => {
 export const updateBubble = async (req, res) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id))
-    return res.status(404).send("no bubble with that id");
+    return res.status(404).json({ message: "invalid bubbleId" });
   try {
     const updatedBubble = await Bubble.findByIdAndUpdate({ id }, req.body, {
       new: true,
@@ -39,7 +39,7 @@ export const updateBubble = async (req, res) => {
 export const deleteBubble = async (req, res) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id))
-    return res.status(404).send("no bubble with that id");
+    return res.status(404).json({ message: "invalid bubbleId" });
   try {
     await Bubble.findByIdAndDelete({ id });
     res.status(205).json({ message: "deleted bubble" });
@@ -51,7 +51,7 @@ export const listBubbles = async (req, res) => {
   try {
     const { id } = req.user;
     if (!mongoose.Types.ObjectId.isValid(id))
-      return res.status(404).send("no valid id");
+      return res.status(404).json({ message: "invalid bubbleId" });
 
     const userBubbles = await Bubble.find({ members: id }).populate(
       "members",
@@ -66,7 +66,7 @@ export const listBubbles = async (req, res) => {
 export const findBubbleById = async (req, res) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid)
-    return res.status(404).send("no valid id");
+    return res.status(404).json({ message: "invalid bubbleId" });
   try {
     const foundBubble = await Bubble.findById({ id });
     res.status(200).json(foundBubble);

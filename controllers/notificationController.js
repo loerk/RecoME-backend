@@ -43,11 +43,10 @@ export const addNotification = async (req, res) => {
 export const deleteNotification = async (req, res) => {
   const { notificationId } = req.params;
   if (!mongoose.Types.ObjectId.isValid(notificationId))
-    return res.status(404).send("no notification with that id");
-
+    return res.status(404).json({ message: "invalid id" });
   try {
     await Notification.findByIdAndDelete(notificationId);
-    res.status(205).json({ message: "deleted reco" });
+    res.status(200).json({ message: "successfully deleted notification" });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -56,19 +55,18 @@ export const deleteNotification = async (req, res) => {
 export const acceptNotification = async (req, res) => {
   const { id } = req.user;
   const notificationId = req.params.id;
-  console.log(notificationId);
   if (!mongoose.Types.ObjectId.isValid(notificationId))
-    return res.status(404).send("no notification with that id");
+    return res.status(404).json({ message: "invalid id" });
 
   try {
     const notification = await Notification.findById(notificationId);
-    console.log(notification);
     if (notification.type === "INVITATION_TO_BUBBLE") {
       const bubble = await Bubble.findByIdAndUpdate(
         notification.bubbleId,
         { $addToSet: { members: id } },
         { new: true }
       );
+      // update Friend
       await User.findByIdAndUpdate(
         notification.invitedBy,
         { $addToSet: { friends: id } },
@@ -80,9 +78,10 @@ export const acceptNotification = async (req, res) => {
         { new: true }
       );
       await Notification.findByIdAndDelete(notificationId);
-      res
-        .status(205)
-        .json({ updatedBubble: bubble, updatedCurrentUser: currentUser });
+      return res.status(200).json({
+        updatedBubble: bubble,
+        updatedCurrentUser: currentUser,
+      });
     }
     if (notification.type === "INVITATION_TO_RECO") {
       const reco = await Reco.findByIdAndUpdate(
