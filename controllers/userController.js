@@ -3,20 +3,14 @@ import User from "../models/User.js";
 export const findUserById = async (req, res) => {
   try {
     const { id } = req.params;
-    const foundUser = await User.findById(id);
+    const foundUser = await User.findById(id).populate(
+      "friends",
+      "_id username avatarUrl"
+    );
+    console.log(foundUser);
     res.status(200).json(foundUser);
   } catch (error) {
-    res.status(400).json({ message: err.message });
-  }
-};
-
-export const findUserByEmail = async (req, res) => {
-  try {
-    const { email } = req.params;
-    const foundUser = await User.findOne(email);
-    res.status(200).json(foundUser);
-  } catch (error) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
