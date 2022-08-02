@@ -26,7 +26,9 @@ export const deleteNotification = async (req, res) => {
     return res.status(404).json({ message: "invalid id" });
   try {
     await Notification.findByIdAndDelete(notificationId);
-    res.status(200).json({ message: "successfully deleted notification" });
+    const remainingNotifications = await listNotifications();
+    if (remainingNotifications > 1)
+      return res.status(200).json({ remainingNotifications });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
