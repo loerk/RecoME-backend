@@ -4,7 +4,7 @@ import config from "config";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 
-import connectDb from "./helpers/dbConnect.js";
+import dbConnect from "./helpers/dbConnect.js";
 import authRouter from "./routes/authRouter.js";
 import userRouter from "./routes/userRouter.js";
 import bubbleRouter from "./routes/bubbleRouter.js";
@@ -12,6 +12,7 @@ import recoRouter from "./routes/recoRouter.js";
 import notificationRouter from "./routes/notificationRouter.js";
 
 import { globalErrorHandler } from "./middlewares/globalErrorHandler.js";
+import requestLogger from "./middlewares/requestLogger.js";
 
 const server = express();
 
@@ -19,6 +20,7 @@ const server = express();
 server.use(express.json());
 server.use(cors({ origin: true, credentials: true }));
 server.use(cookieParser());
+server.use(requestLogger);
 
 // Routes
 server.use("/auth", authRouter);
@@ -30,7 +32,7 @@ server.use("/notifications", notificationRouter);
 server.use(globalErrorHandler);
 
 // dbConnection
-connectDb();
+dbConnect();
 mongoose.connection.on("open", () => {
   console.log("connected to DB");
 });
