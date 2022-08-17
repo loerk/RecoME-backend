@@ -6,11 +6,11 @@ export const generateToken = (payload, type) => {
   const ACCESS_SECRET = config.get("jwt_secret.access");
   if (type === "ACCESS")
     return jwt.sign(payload, ACCESS_SECRET, {
-      expiresIn: "1hr",
+      expiresIn: "3hr",
     });
   if (type === "REFRESH")
     return jwt.sign(payload, REFRESH_SECRET, {
-      expiresIn: "1d",
+      expiresIn: "5d",
     });
   if (type === "EMAIL")
     return jwt.sign(payload, ACCESS_SECRET, { expiresIn: "360000" });
