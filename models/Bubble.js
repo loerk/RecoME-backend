@@ -17,7 +17,7 @@ const bubbleSchema = new Schema(
     },
     createdBy: String,
     imageUrl: String,
-    members: [{ type: String, ref: "User" }],
+    members: [{ type: String, ref: "User", default: null }],
   },
   { timestamps: true }
 );

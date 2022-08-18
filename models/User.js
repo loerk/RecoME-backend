@@ -28,7 +28,7 @@ const userSchema = new Schema(
       default: new Date(),
     },
     avatarUrl: String,
-    friends: [{ type: String, ref: "User" }],
+    friends: [{ type: String, ref: "User", default: null }],
   },
   { timestamps: true }
 );

@@ -7,7 +7,7 @@ const recoSchema = new Schema(
       type: [String],
       required,
     },
-    name: {
+    title: {
       type: String,
       required,
     },
@@ -15,11 +15,11 @@ const recoSchema = new Schema(
       type: String,
       required,
     },
-    createdBy: String,
-    url: String,
+    createdBy: { type: String, ref: "User", default: null },
+    recoUrl: String,
     imageUrl: String,
-    userIds: { type: [String], ref: "User" },
-    bubbleId: { type: String, ref: "Bubble" },
+    userIds: { type: [String], ref: "User", default: null },
+    bubbleId: { type: String, ref: "Bubble", default: null },
   },
   { timestamps: true }
 );
