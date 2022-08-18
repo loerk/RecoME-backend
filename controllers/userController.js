@@ -7,8 +7,7 @@ export const findUserById = async (req, res) => {
       "friends",
       "_id username avatarUrl"
     );
-    console.log(foundUser);
-    res.status(200).json(foundUser);
+    res.status(200).json({ foundUser });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -25,6 +24,29 @@ export const updateUser = async (req, res) => {
     res.status(201).json(newUser);
   } catch (error) {
     res.status(400).json({ message: err.message });
+  }
+};
+
+export const unfriendUser = async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const friendId = req.params.id;
+    const updatedCurrentUser = await User.findByIdAndUpdate(
+      _id,
+      { $pull: { friends: friendId } },
+      { new: true }
+    );
+    await User.findByIdAndUpdate(
+      friendId,
+      { $pull: { friends: _id } },
+      { new: true }
+    );
+    if (updatedCurrentUser) return res.status(200).json({ updatedCurrentUser });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(409)
+      .json({ message: "something went wrong while unfriend User" });
   }
 };
 

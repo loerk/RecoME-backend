@@ -1,45 +1,50 @@
 import mongoose from "mongoose";
 import { addNotification } from "../helpers/addNotification.js";
 import Bubble from "../models/Bubble.js";
+import Notification from "../models/Notification.js";
 import Reco from "../models/Reco.js";
-import { findBubbleById } from "./bubbleController.js";
 
 export const listRecos = async (req, res) => {
   try {
-    const { id } = req.user;
-    if (!mongoose.Types.ObjectId.isValid(id))
+    const { _id } = req.user;
+    if (!mongoose.Types.ObjectId.isValid(_id))
       return res.status(404).send("no valid id");
 
-    const bubbles = await Bubble.find({ members: id });
-    const bubbleIds = bubbles.map((bubble) => bubble._id);
-
     const recos = await Reco.find({
-      $or: [{ memberIds: id }, { bubbleId: { $in: bubbleIds } }],
-    });
+      $or: [{ userIds: _id }, { createdBy: _id }],
+    }).populate([
+      { path: "createdBy", select: "_id avatarUrl" },
+      { path: "bubbleId", select: " _id name imageUrl" },
+      { path: "userIds", select: "_id avatarUrl" },
+    ]);
 
-    res.status(200).json(recos);
+    res.status(200).json({ recos });
   } catch (error) {
     console.log(error);
   }
 };
 
 export const addReco = async (req, res) => {
-  const { id } = req.user;
-  const { categories, name, description, imageUrl, userIds, bubbleId } =
+  const { _id } = req.user;
+  const { categories, title, description, recoUrl, userIds, bubbleId } =
     req.body;
+  console.log(req.body);
+  console.log(userIds);
+
   try {
     const reco = await Reco.create({
       userIds,
       bubbleId: bubbleId,
-      createdBy: id,
-      categories,
-      name,
+      createdBy: _id,
+      categories: categories.split(","),
+      title,
       description,
-      imageUrl,
+      recoUrl,
     });
-    if (!bubbleId) {
+
+    if (!bubbleId && reco) {
       const notification = await addNotification({
-        id,
+        _id,
         recoId: reco._id,
         type: "INVITATION_TO_RECO",
         userIds,
@@ -49,14 +54,14 @@ export const addReco = async (req, res) => {
           .status(400)
           .json({ message: "could not create notification" });
     } else {
-      const bubble = await Bubble.findById(bubbleId);
       const notification = await addNotification({
-        id,
+        _id,
         bubbleId,
+        recoId: reco._id,
         type: "NOTIFICATION_ABOUT_RECO_IN_BUBBLE",
-        userIds: bubble.members,
+        userIds,
       });
-      console.log(notification);
+
       if (!notification)
         return res
           .status(400)
@@ -70,12 +75,31 @@ export const addReco = async (req, res) => {
   }
 };
 
+export const listBubbleRecos = async (req, res) => {
+  const { _id } = req.user;
+  const { id: bubbleId } = req.params;
+  try {
+    if (!mongoose.Types.ObjectId.isValid(bubbleId))
+      return res.status(404).json({ message: "invalid bubbleId" });
+
+    const bubbleRecos = await Reco.find({ bubbleId: bubbleId });
+    const filteredBubbleRecos = bubbleRecos.filter((bubbleReco) => {
+      if (!bubbleReco.userIds.includes(_id)) return false;
+      return true;
+    });
+
+    res.status(200).json({ bubbleRecos: filteredBubbleRecos });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const updateReco = async (req, res) => {
-  const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(id))
+  const { id: recoId } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(recoId))
     return res.status(404).send("no reco with that id");
   try {
-    const reco = await Reco.findByIdAndUpdate({ id }, req.body, {
+    const reco = await Reco.findByIdAndUpdate({ id: recoId }, req.body, {
       new: true,
     });
     res.status(202).json(reco);
@@ -85,22 +109,56 @@ export const updateReco = async (req, res) => {
   }
 };
 
-export const deleteReco = async (req, res) => {
-  const { id } = req.user;
-  const { recoId } = req.params;
+export const ignoreReco = async (req, res) => {
+  console.log("entered ignore");
+  const { _id } = req.user;
+  const recoId = req.params.id;
+
   if (!mongoose.Types.ObjectId.isValid(recoId))
-    return res.status(404).send("no bubble with that id");
+    return res.status(404).send("no reco with that id");
 
   try {
-    const reco = await findRecoById(recoId);
-    if (!reco.memberIds?.includes(id)) {
-      const bubble = findBubbleById(reco.bubbleId);
-      if (!bubble.members.includes(id))
+    const reco = await Reco.findById(recoId);
+    if (reco.userIds.length > 1) {
+      const updatedReco = await Reco.findByIdAndUpdate(recoId, {
+        $pull: { userIds: _id },
+      });
+
+      if (updatedReco) {
+        return res.status(200).json({ message: "removed User successfully" });
+      }
+    } else {
+      await Reco.findByIdAndDelete(recoId);
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const deleteReco = async (req, res) => {
+  const { _id } = req.user;
+  const recoId = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(recoId))
+    return res.status(404).send("no reco with that id");
+
+  try {
+    const reco = await Reco.findById(recoId);
+    console.log(reco);
+    if (!reco.userIds?.includes(_id)) {
+      const bubble = await Bubble.findById(reco.bubbleId);
+      if (!bubble.members.includes(_id))
         return res.status(403).send("not authorized to delete");
     }
-    await Reco.findByIdAndDelete(id);
-    res.status(205).json({ message: "deleted reco" });
-  } catch (err) {
+
+    const deletedReco = await Reco.findByIdAndDelete(recoId);
+    if (deletedReco) {
+      const removedNoti = await Notification.findOneAndDelete({ recoId });
+      console.log(removedNoti);
+      res.status(205).json({ message: "deleted reco" });
+    }
+  } catch (error) {
+    console.log(error);
     res.status(400).json({ message: err.message });
   }
 };
