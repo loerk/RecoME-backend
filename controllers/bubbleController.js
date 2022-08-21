@@ -60,7 +60,7 @@ export const listBubbles = async (req, res) => {
       "members",
       "_id username avatarUrl"
     );
-    res.status(200).json(userBubbles);
+    res.status(200).json({ userBubbles });
   } catch (error) {
     console.log(error);
   }
