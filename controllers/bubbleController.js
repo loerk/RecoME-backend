@@ -44,9 +44,10 @@ export const deleteBubble = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id))
     return res.status(404).json({ message: "invalid bubbleId" });
   try {
-    await Bubble.findByIdAndDelete({ id });
+    await Bubble.findByIdAndDelete(id);
     res.status(205).json({ message: "deleted bubble" });
-  } catch (err) {
+  } catch (error) {
+    console.log(error);
     res.status(400).json({ message: err.message });
   }
 };
@@ -124,10 +125,11 @@ export const inviteUsers = async (req, res) => {
 export const leaveBubble = async (req, res) => {
   const { _id } = req.user;
   const bubbleId = req.params.bubbleId;
+
   try {
     const currentBubble = await Bubble.findById(bubbleId);
     if (currentBubble.members.length === 1) {
-      await deleteBubble(bubbleId);
+      await Bubble.findByIdAndDelete(bubbleId);
     } else {
       currentBubble.members = currentBubble.members.filter(
         (memberId) => memberId !== _id
