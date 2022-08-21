@@ -5,6 +5,7 @@ import Reco from "../models/Reco.js";
 import User from "../models/User.js";
 
 export const listNotifications = async (req, res) => {
+  const { _id } = req.user;
   try {
     const { id } = req.user;
     if (!mongoose.Types.ObjectId.isValid(id))
@@ -35,7 +36,7 @@ export const deleteNotification = async (req, res) => {
 };
 
 export const acceptNotification = async (req, res) => {
-  const { id } = req.user;
+  const { _id } = req.user;
   const notificationId = req.params.id;
   if (!mongoose.Types.ObjectId.isValid(notificationId))
     return res.status(404).json({ message: "invalid id" });

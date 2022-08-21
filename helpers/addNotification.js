@@ -39,7 +39,7 @@ export const addNotification = async (data) => {
   try {
     const notification = await Notification.create({
       bubbleId,
-      invitedBy: id,
+      invitedBy: _id,
       type,
       userIds: filteredUserIds || userIds,
       recoId,

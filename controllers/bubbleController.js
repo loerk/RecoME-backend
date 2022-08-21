@@ -52,11 +52,11 @@ export const deleteBubble = async (req, res) => {
 };
 export const listBubbles = async (req, res) => {
   try {
-    const { id } = req.user;
-    if (!mongoose.Types.ObjectId.isValid(id))
+    const { _id } = req.user;
+    if (!mongoose.Types.ObjectId.isValid(_id))
       return res.status(404).json({ message: "invalid bubbleId" });
 
-    const userBubbles = await Bubble.find({ members: id }).populate(
+    const userBubbles = await Bubble.find({ members: _id }).populate(
       "members",
       "_id username avatarUrl"
     );
@@ -68,7 +68,7 @@ export const listBubbles = async (req, res) => {
 
 export const findBubbleById = async (req, res) => {
   const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid)
+  if (!mongoose.Types.ObjectId.isValid(id))
     return res.status(404).json({ message: "invalid bubbleId" });
   try {
     const foundBubble = await Bubble.findById({ id });
@@ -79,10 +79,12 @@ export const findBubbleById = async (req, res) => {
 };
 
 export const inviteUsers = async (req, res) => {
-  const { id } = req.user;
+  const { _id } = req.user;
   const bubbleId = req.params.bubbleId;
   const { userIds, email } = req.body;
 
+  if (!mongoose.Types.ObjectId.isValid(bubbleId))
+    return res.status(404).json({ message: "invalid bubbleId" });
   try {
     const currentBubble = await Bubble.findById(bubbleId);
     let filteredUserIds;
@@ -103,7 +105,7 @@ export const inviteUsers = async (req, res) => {
           .json({ message: "all invited users are already member" });
     }
     const notification = await addNotification({
-      id,
+      _id,
       bubbleId,
       type: "INVITATION_TO_BUBBLE",
       userIds: filteredUserIds,
@@ -120,7 +122,7 @@ export const inviteUsers = async (req, res) => {
 };
 
 export const leaveBubble = async (req, res) => {
-  const { id } = req.user;
+  const { _id } = req.user;
   const bubbleId = req.params.bubbleId;
   try {
     const currentBubble = await Bubble.findById(bubbleId);
@@ -128,7 +130,7 @@ export const leaveBubble = async (req, res) => {
       await deleteBubble(bubbleId);
     } else {
       currentBubble.members = currentBubble.members.filter(
-        (memberId) => memberId !== id
+        (memberId) => memberId !== _id
       );
       await currentBubble.save();
     }
