@@ -5,22 +5,22 @@ import Bubble from "../models/Bubble.js";
 import User from "../models/User.js";
 
 export const addBubble = async (req, res) => {
-  const { id } = req.user;
-  const { categories, name, description, createdBy, imageUrl, members } =
-    req.body;
+  const { _id } = req.user;
+  const { categories, name, description, imageUrl } = req.body;
 
   try {
     const bubble = await Bubble.create({
-      categories: categories.split(" "),
+      categories: categories.split(","),
       name,
       description,
-      createdBy: id,
+      createdBy: _id,
       imageUrl,
-      members: [id],
+      members: [_id],
     });
 
     res.status(201).json(bubble);
   } catch (error) {
+    console.log(error);
     res.status(409).json({ message: error.message });
   }
 };
