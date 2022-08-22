@@ -60,29 +60,50 @@ export const acceptNotification = async (req, res) => {
 
   try {
     const notification = await Notification.findById(notificationId);
+    const friendId = notification.invitedBy;
+
     if (notification.type === "INVITATION_TO_BUBBLE") {
       const bubble = await Bubble.findByIdAndUpdate(
         notification.bubbleId,
-        { $addToSet: { members: id } },
+        { $addToSet: { members: _id } },
         { new: true }
       );
-      // update Friend
+
       await User.findByIdAndUpdate(
-        notification.invitedBy,
-        { $addToSet: { friends: id } },
+        friendId,
+        { $addToSet: { friends: _id } },
         { new: true }
       );
+
       const currentUser = await User.findByIdAndUpdate(
-        id,
-        { $addToSet: { friends: notification.invitedBy } },
+        _id,
+        { $addToSet: { friends: friendId } },
         { new: true }
       );
-      await Notification.findByIdAndDelete(notificationId);
-      return res.status(200).json({
-        updatedBubble: bubble,
-        updatedCurrentUser: currentUser,
-      });
+      // if the notification is for more than one user, remove user from notification
+      if (notification.userIds.length > 1) {
+        const updatedNotification = await Notification.findByIdAndUpdate(
+          notificationId,
+          {
+            $pull: { userIds: _id },
+          }
+        );
+        console.log(updatedNotification);
+        return res.status(200).json({
+          updatedBubble: bubble,
+          currentUser,
+          message: "removed user from notification",
+        });
+      } else {
+        // if the user is the only one receiving this notification, delete this notification
+        await Notification.findByIdAndDelete(notificationId);
+        return res.status(200).json({
+          updatedBubble: bubble,
+          currentUser,
+        });
+      }
     }
+
     if (notification.type === "INVITATION_TO_RECO") {
       const reco = await Reco.findByIdAndUpdate(
         notification.recoId,
