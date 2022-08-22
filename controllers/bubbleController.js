@@ -6,7 +6,7 @@ import User from "../models/User.js";
 
 export const addBubble = async (req, res) => {
   const { _id } = req.user;
-  const { categories, name, description, imageUrl } = req.body;
+  const { categories, name, description, imageUrl, defaultImg } = req.body;
 
   try {
     const bubble = await Bubble.create({
@@ -16,6 +16,7 @@ export const addBubble = async (req, res) => {
       createdBy: _id,
       imageUrl,
       members: [_id],
+      defaultImg,
     });
 
     res.status(201).json(bubble);
