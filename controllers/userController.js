@@ -23,7 +23,7 @@ export const updateUser = async (req, res) => {
     });
     res.status(201).json(newUser);
   } catch (error) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: error.message });
   }
 };
 

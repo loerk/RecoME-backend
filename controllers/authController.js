@@ -113,8 +113,8 @@ export const verifyEmailToken = (req, res) => {
   if (!tokenIsVerified)
     res.status(400).json({ message: "no valid email token" });
 
-  User.findOneAndUpdate({ emailToken }, { verified: true }, (err) => {
-    if (err) res.status(400).json(err.message);
+  User.findOneAndUpdate({ emailToken }, { verified: true }, (error) => {
+    if (error) res.status(400).json(error.message);
     res.status(200).redirect("http://localhost:3000/login");
   });
 };

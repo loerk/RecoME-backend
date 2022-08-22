@@ -56,6 +56,7 @@ export const addNotification = async (data) => {
     });
     return notification;
   } catch (error) {
+    console.log(error);
     return error;
   }
 };

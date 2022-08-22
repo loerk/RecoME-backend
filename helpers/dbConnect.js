@@ -6,8 +6,8 @@ const DB = config.get("db.uri");
 const connectDb = () => {
   try {
     mongoose.connect(DB);
-  } catch (err) {
-    console.log("connection failed", err.message);
+  } catch (error) {
+    console.log("connection failed", error.message);
   }
 };
 

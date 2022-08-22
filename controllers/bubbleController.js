@@ -48,7 +48,7 @@ export const deleteBubble = async (req, res) => {
     res.status(205).json({ message: "deleted bubble" });
   } catch (error) {
     console.log(error);
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: error.message });
   }
 };
 export const listBubbles = async (req, res) => {
