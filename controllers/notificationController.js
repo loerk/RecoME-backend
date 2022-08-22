@@ -34,18 +34,21 @@ export const deleteNotification = async (req, res) => {
   try {
     const notification = await Notification.findById(notificationId);
     if (notification.userIds.length > 1) {
-      await Notification.findByIdAndUpdate(notificationId, {
-        $pull: { userIds: _id },
-      });
-      return res
-        .state(205)
-        .json({ message: "successfully removed user from notification" });
+      const updatedNotifification = await Notification.findByIdAndUpdate(
+        notificationId,
+        {
+          $pull: { userIds: _id },
+        }
+      );
+      if (updatedNotifification)
+        return res
+          .state(205)
+          .json({ message: "successfully removed user from notification" });
     }
 
-    await Notification.findByIdAndDelete(notificationId);
+    const deleted = await Notification.findByIdAndDelete(notificationId);
     const remainingNotifications = await listNotifications();
-    if (remainingNotifications > 1)
-      return res.status(200).json({ remainingNotifications });
+    return res.status(200).json({ remainingNotifications });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -88,7 +91,6 @@ export const acceptNotification = async (req, res) => {
             $pull: { userIds: _id },
           }
         );
-        console.log(updatedNotification);
         return res.status(200).json({
           updatedBubble: bubble,
           currentUser,
