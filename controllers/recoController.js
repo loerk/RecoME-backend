@@ -28,8 +28,6 @@ export const addReco = async (req, res) => {
   const { _id } = req.user;
   const { categories, title, description, recoUrl, userIds, bubbleId } =
     req.body;
-  console.log(req.body);
-  console.log(userIds);
 
   try {
     const reco = await Reco.create({
@@ -54,12 +52,13 @@ export const addReco = async (req, res) => {
           .status(400)
           .json({ message: "could not create notification" });
     } else {
+      const filteredUserIds = userIds.filter((userId) => userId._id !== _id);
       const notification = await addNotification({
         _id,
         bubbleId,
         recoId: reco._id,
         type: "NOTIFICATION_ABOUT_RECO_IN_BUBBLE",
-        userIds,
+        userIds: filteredUserIds,
       });
 
       if (!notification)
@@ -82,7 +81,10 @@ export const listBubbleRecos = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(bubbleId))
       return res.status(404).json({ message: "invalid bubbleId" });
 
-    const bubbleRecos = await Reco.find({ bubbleId: bubbleId });
+    const bubbleRecos = await Reco.find({ bubbleId: bubbleId }).populate(
+      "createdBy",
+      "_id avatarUrl"
+    );
     const filteredBubbleRecos = bubbleRecos.filter((bubbleReco) => {
       if (!bubbleReco.userIds.includes(_id)) return false;
       return true;
@@ -110,7 +112,6 @@ export const updateReco = async (req, res) => {
 };
 
 export const ignoreReco = async (req, res) => {
-  console.log("entered ignore");
   const { _id } = req.user;
   const recoId = req.params.id;
 
@@ -144,7 +145,6 @@ export const deleteReco = async (req, res) => {
 
   try {
     const reco = await Reco.findById(recoId);
-    console.log(reco);
     if (!reco.userIds?.includes(_id)) {
       const bubble = await Bubble.findById(reco.bubbleId);
       if (!bubble.members.includes(_id))
@@ -153,8 +153,7 @@ export const deleteReco = async (req, res) => {
 
     const deletedReco = await Reco.findByIdAndDelete(recoId);
     if (deletedReco) {
-      const removedNoti = await Notification.findOneAndDelete({ recoId });
-      console.log(removedNoti);
+      await Notification.findOneAndDelete({ recoId });
       res.status(205).json({ message: "deleted reco" });
     }
   } catch (error) {
