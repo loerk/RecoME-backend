@@ -7,13 +7,11 @@ import User from "../models/User.js";
 export const listNotifications = async (req, res) => {
   const { _id } = req.user;
   try {
-    const { id } = req.user;
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return res.status(404).send("no valid id");
-    const bubbles = await Bubble.find({ members: id });
-    const bubbleIds = bubbles.map((bubble) => bubble._id);
-    const notifications = await Notification.find({
-      $or: [{ userIds: id }, { bubbleId: { $in: bubbleIds } }],
+    const notifications = await Notification.find({ userIds: _id }).populate([
+      { path: "bubbleId", select: "_id name" },
+      { path: "invitedBy", select: "_id username" },
+      { path: "recoId", select: "_id title url" },
+    ]);
     });
     res.status(200).json(notifications);
   } catch (error) {
