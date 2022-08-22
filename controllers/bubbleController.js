@@ -72,8 +72,11 @@ export const findBubbleById = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id))
     return res.status(404).json({ message: "invalid bubbleId" });
   try {
-    const foundBubble = await Bubble.findById({ id });
-    res.status(200).json(foundBubble);
+    const bubble = await Bubble.findById(id).populate(
+      "members",
+      "_id username avatarUrl"
+    );
+    res.status(200).json({ bubble });
   } catch (error) {
     console.log(error);
   }
