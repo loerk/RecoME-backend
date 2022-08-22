@@ -94,20 +94,24 @@ export const inviteUsers = async (req, res) => {
     let filteredUserIds;
     if (email) {
       const user = await User.findOne({ email });
-
-      if (currentBubble.members.includes(user._id))
+      const _id = user._id.toString();
+      if (currentBubble.members.includes(_id))
         return res.status(409).json({ message: "user is already member" });
-      filteredUserIds = [user._id];
-    } else {
+      filteredUserIds = [_id];
+    }
+    if (userIds) {
+      // collect the users who are not yet member
       filteredUserIds = userIds.filter((userId) => {
         if (currentBubble.members.includes(userId)) return false;
         return true;
       });
+
       if (filteredUserIds.length === 0)
         return res
           .status(409)
           .json({ message: "all invited users are already member" });
     }
+
     const notification = await addNotification({
       _id,
       bubbleId,
