@@ -12,10 +12,16 @@ export const listNotifications = async (req, res) => {
       { path: "invitedBy", select: "_id username" },
       { path: "recoId", select: "_id title url" },
     ]);
+
+    const filteredNotifications = notifications.filter((notification) => {
+      if (notification.invitedBy._id == _id) return false;
+      return true;
     });
-    res.status(200).json(notifications);
+
+    res.status(200).json({ notifications: filteredNotifications });
   } catch (error) {
     console.log(error);
+    res.status(400).json({ message: error.message });
   }
 };
 
