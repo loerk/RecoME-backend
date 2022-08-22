@@ -6,7 +6,7 @@ import {
   listNotifications,
 } from "../controllers/notificationController.js";
 
-import { verifyAccessToken } from "../middlewares/verifyAccessToken.js";
+import verifyAccessToken from "../middlewares/verifyAccessToken.js";
 
 const notificationRouter = Router();
 notificationRouter.get("/", verifyAccessToken, listNotifications);
