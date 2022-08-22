@@ -113,13 +113,14 @@ export const acceptNotification = async (req, res) => {
       await Notification.findByIdAndDelete(notificationId);
       return res.status(200).json({ reco, message: "deleted notification" });
     }
+
     if (notification.type === "NOTIFICATION_ABOUT_RECO_IN_BUBBLE") {
       const notification = await Notification.findById(notificationId);
+
       if (notification.userIds.length > 1) {
-        await Notification.updateOne(
-          { _id: notificationId },
-          { $pull: { userIds: id } }
-        );
+        await Notification.findByIdAndUpdate(notificationId, {
+          $pull: { userIds: _id },
+        });
         return res
           .status(205)
           .json({ message: "removed user from notification" });
