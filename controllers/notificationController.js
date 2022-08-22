@@ -26,22 +26,35 @@ export const listNotifications = async (req, res) => {
 };
 
 export const deleteNotification = async (req, res) => {
+  const { _id } = req.user;
   const notificationId = req.params.id;
   if (!mongoose.Types.ObjectId.isValid(notificationId))
     return res.status(404).json({ message: "invalid id" });
+
   try {
+    const notification = await Notification.findById(notificationId);
+    if (notification.userIds.length > 1) {
+      await Notification.findByIdAndUpdate(notificationId, {
+        $pull: { userIds: _id },
+      });
+      return res
+        .state(205)
+        .json({ message: "successfully removed user from notification" });
+    }
+
     await Notification.findByIdAndDelete(notificationId);
     const remainingNotifications = await listNotifications();
     if (remainingNotifications > 1)
       return res.status(200).json({ remainingNotifications });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
 
 export const acceptNotification = async (req, res) => {
   const { _id } = req.user;
   const notificationId = req.params.id;
+
   if (!mongoose.Types.ObjectId.isValid(notificationId))
     return res.status(404).json({ message: "invalid id" });
 
