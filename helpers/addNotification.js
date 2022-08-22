@@ -37,13 +37,19 @@ export const addNotification = async (data) => {
   if (type === "INVITATION_TO_RECO") {
     const recos = await Reco.find({ userIds: { $in: userIds } });
     const recoIds = recos.map((reco) => reco._id);
-    if (recoIds.includes(recoId)) throw new Error("user already has this reco");
+
     const recoNotifications = await Notification.find({
-      $and: [{ userIds: id }, { recoId: { $in: recoIds } }],
+      recoId: { $in: recoIds },
     });
 
-    if (recoNotifications.length !== 0)
+    if (recoNotifications.length !== 0) {
       throw new Error("user is already invited to this reco");
+    } else {
+      filteredUserIds = userIds.filter((userId) => userId !== _id);
+    }
+  }
+  if (type === "NOTIFICATION_ABOUT_RECO_IN_BUBBLE") {
+    filteredUserIds = userIds.filter((userId) => userId !== _id);
   }
 
   try {
@@ -51,7 +57,7 @@ export const addNotification = async (data) => {
       bubbleId,
       invitedBy: _id,
       type,
-      userIds: filteredUserIds || userIds,
+      userIds: filteredUserIds,
       recoId,
     });
     return notification;
