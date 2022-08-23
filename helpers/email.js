@@ -252,7 +252,7 @@ export const emailHTML = (token, username) => {
                             style="border-radius: 6px"
                           >
                             <a
-                              href="http://localhost:6065/auth/verifyEmail/${token}"
+                              href="https://recome-loerk-server.herokuapp.com/auth/verifyEmail/${token}"
                               target="_blank"
                               style="
                                 display: inline-block;
