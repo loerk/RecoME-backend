@@ -115,6 +115,6 @@ export const verifyEmailToken = (req, res) => {
 
   User.findOneAndUpdate({ emailToken }, { verified: true }, (error) => {
     if (error) res.status(400).json(error.message);
-    res.status(200).redirect("http://localhost:3000/login");
+    res.status(200).redirect("https://recomenow.netlify.app/login");
   });
 };
