@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
-import config from "config";
+import "dotenv/config";
 
 const verifyAccessToken = (req, res, next) => {
-  const ACCESS_SECRET = config.get("jwt_secret.access");
+  const ACCESS_SECRET = process.env.REACT_APP_ACCESS_SECRET;
   const accessToken = req.cookies.accessToken;
   if (!accessToken) return res.status(401).json({ message: "Forbidden" });
 

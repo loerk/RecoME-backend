@@ -1,10 +1,10 @@
 import sgMail from "@sendgrid/mail";
-import config from "config";
+import "dotenv/config";
+
 import { emailHTML } from "./email.js";
-sgMail.setApiKey(config.get("email_verification.api_key"));
+sgMail.setApiKey(process.env.REACT_APP_EMAIL_VERIFICATION_KEY);
 
 export const sendVerificationEmail = (token, userEmail, username) => {
-  console.log("start sending");
   const msg = {
     to: userEmail,
     from: "welcome-to-recome@posteo.de",
@@ -24,5 +24,4 @@ export const sendVerificationEmail = (token, userEmail, username) => {
       }
     }
   })();
-  console.log("end sending");
 };

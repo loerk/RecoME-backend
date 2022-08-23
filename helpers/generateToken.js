@@ -1,9 +1,10 @@
 import jwt from "jsonwebtoken";
-import config from "config";
+import "dotenv/config";
 
 export const generateToken = (payload, type) => {
-  const REFRESH_SECRET = config.get("jwt_secret.refresh");
-  const ACCESS_SECRET = config.get("jwt_secret.access");
+  const REFRESH_SECRET = process.env.REACT_APP_REFRESH_SECRET;
+  const ACCESS_SECRET = process.env.REACT_APP_ACCESS_SECRET;
+
   if (type === "ACCESS")
     return jwt.sign(payload, ACCESS_SECRET, {
       expiresIn: "3hr",

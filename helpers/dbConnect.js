@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
-import config from "config";
 
-const DB = config.get("db.uri");
+const DB = process.env.REACT_APP_BACKEND_URI;
 
 const connectDb = () => {
   try {

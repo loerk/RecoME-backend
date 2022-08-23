@@ -1,9 +1,8 @@
 import express from "express";
 import cors from "cors";
-import config from "config";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
-
+import "dotenv/config";
 import dbConnect from "./helpers/dbConnect.js";
 import authRouter from "./routes/authRouter.js";
 import userRouter from "./routes/userRouter.js";
@@ -40,7 +39,7 @@ mongoose.connection.on("error", (error) => {
   console.log("connection failed", error.message);
 });
 
-const PORT = config.get("app.port");
+const PORT = process.env.PORT;
 
 server.listen(PORT, () => {
   console.log(`server is listening on port ${PORT}`);
