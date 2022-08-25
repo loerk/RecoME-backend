@@ -17,7 +17,9 @@ const server = express();
 
 // middlewares
 server.use(express.json());
-server.use(cors({ origin: true, credentials: true }));
+server.use(
+  cors({ origin: "https://recomenow.netlify.app", credentials: true })
+);
 server.use(cookieParser());
 server.use(requestLogger);
 
