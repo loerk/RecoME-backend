@@ -231,7 +231,7 @@ export const emailHTML = (token, username) => {
                 <p style="margin: 0">
                   Tap the button below to confirm your email address. If you
                   didn't create an account with
-                  <a href="https://blogdesire.com">RecoMe</a>, you can safely
+                  <a href="https://recomenow.netlify.app">RecoMe</a>, you can safely
                   delete this email.
                 </p>
               </td>
@@ -252,7 +252,7 @@ export const emailHTML = (token, username) => {
                             style="border-radius: 6px"
                           >
                             <a
-                              href="https://recome-loerk-server.herokuapp.com/auth/verifyEmail/${token}"
+                              href="https://nutty-kilt-seal.cyclic.app/auth/verifyEmail/${token}"
                               target="_blank"
                               style="
                                 display: inline-block;
