@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 const { Schema } = mongoose;
 const required = true;
 const recoSchema = new Schema(
@@ -15,13 +15,13 @@ const recoSchema = new Schema(
       type: String,
       required,
     },
-    createdBy: { type: String, ref: "User", default: null },
+    createdBy: { type: String, ref: 'User', default: null },
     recoUrl: String,
     imageUrl: String,
-    userIds: { type: [String], ref: "User", default: null },
-    bubbleId: { type: String, ref: "Bubble", default: null },
+    userIds: { type: [String], ref: 'User', default: null },
+    bubbleId: { type: String, ref: 'Bubble', default: null },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Reco", recoSchema);
+export default mongoose.model('Reco', recoSchema);

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 const { Schema } = mongoose;
 const required = true;
 const userSchema = new Schema(
@@ -28,9 +28,9 @@ const userSchema = new Schema(
       default: new Date(),
     },
     avatarUrl: String,
-    friends: [{ type: String, ref: "User", default: null }],
+    friends: [{ type: String, ref: 'User', default: null }],
   },
   { timestamps: true }
 );
 
-export default mongoose.model("User", userSchema);
+export default mongoose.model('User', userSchema);

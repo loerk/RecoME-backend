@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 const { Schema } = mongoose;
 const required = true;
 const bubbleSchema = new Schema(
@@ -18,9 +18,9 @@ const bubbleSchema = new Schema(
     defaultImg: Boolean,
     createdBy: String,
     imageUrl: String,
-    members: [{ type: String, ref: "User", default: null }],
+    members: [{ type: String, ref: 'User', default: null }],
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Bubble", bubbleSchema);
+export default mongoose.model('Bubble', bubbleSchema);

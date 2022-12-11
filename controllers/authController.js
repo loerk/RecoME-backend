@@ -18,15 +18,15 @@ export const signin = async (req, res) => {
       'friends',
       '_id avatarUrl username'
     );
-
     if (!existingUser) throw new Error('Wrong email or password');
+    // uncomment to check for email verification
+    // if (!existingUser.verified)
+    //   res.status(400).json({ message: 'please confirm your email first' });
 
     const isValidUser = await bcrypt.compare(password, existingUser.password);
 
-    if (!isValidUser) throw new Error('Wrong email or password');
-
-    if (!existingUser.verified)
-      res.status(400).json({ message: 'please confirm your email first' });
+    if (!isValidUser)
+      res.status(400).json({ message: 'wrong email or password' });
 
     const { username, _id } = existingUser;
     const payload = {
@@ -59,6 +59,7 @@ export const signin = async (req, res) => {
       existingUser,
     });
   } catch (error) {
+    console.log(error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -71,11 +72,11 @@ export const signin = async (req, res) => {
  * @desc registration request controller
  */
 export const signup = async (req, res) => {
-  console.log(req.body);
   try {
     const { email, password, passwordConfirm, username } = req.body;
     const emailToken = generateToken({ email }, 'EMAIL');
-    const existingUser = await User.findOne({ email }).lean();
+    const existingUser = await User.findOne({ email });
+
     if (existingUser)
       return res.status(409).json({ message: 'email already exists' });
 
@@ -90,7 +91,6 @@ export const signup = async (req, res) => {
       avatarUrl: `https://api.multiavatar.com/${username}.png`,
       emailToken,
     });
-
     const errorSendingEmail = sendVerificationEmail(
       emailToken,
       email,
@@ -113,7 +113,6 @@ export const signup = async (req, res) => {
  */
 export const verifyEmailToken = (req, res) => {
   const emailToken = req.params.token;
-
   const tokenIsVerified = isEmailTokenValid(emailToken);
   if (!tokenIsVerified)
     res.status(400).json({ message: 'no valid email token' });
