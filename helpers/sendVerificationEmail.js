@@ -21,7 +21,9 @@ export const sendVerificationEmail = (token, userEmail, username) => {
 
       if (error.response) {
         console.error(error.response.body);
+        return error.resonse.body;
       }
+      return error;
     }
   })();
 };
