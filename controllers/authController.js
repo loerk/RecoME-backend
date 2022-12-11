@@ -26,7 +26,7 @@ export const signin = async (req, res) => {
     if (!isValidUser) throw new Error('Wrong email or password');
 
     if (!existingUser.verified)
-      res.json({ message: 'please confirm your email first' });
+      res.status(400).json({ message: 'please confirm your email first' });
 
     const { username, _id } = existingUser;
     const payload = {
