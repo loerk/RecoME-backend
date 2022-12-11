@@ -110,8 +110,7 @@ export const emailHTML = (token, username) => {
         opacity: 0;
       "
     >
-      A preheader is the short summary text that follows the subject line when
-      an email is viewed in the inbox.
+      Start using RecoME and share recommendations with your friends.
     </div>
     <!-- end preheader -->
 
